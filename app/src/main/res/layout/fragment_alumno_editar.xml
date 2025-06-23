@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFFFFF">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Datos del estudiante -->
+        <TextView
+            android:layout_marginTop="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Datos del estudiante"
+            android:textColor="#4B197A"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etNombresEstudianteEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombres" />
+
+        <EditText
+            android:id="@+id/etApellidosEstudianteEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellidos" />
+
+        <EditText
+            android:id="@+id/etDniEstudianteEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="DNI"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/etEdadEstudianteEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Edad"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/etFechaNacimientoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Fecha de nacimiento" />
+
+        <!-- Spinner Sexo -->
+        <Spinner
+            android:id="@+id/spinnerSexoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp" />
+
+        <!-- Spinner Horario -->
+        <Spinner
+            android:id="@+id/spinnerHorarioEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp" />
+
+        <Spinner
+            android:id="@+id/spinnerEstadoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@android:drawable/edit_text"
+            android:padding="12dp" />
+
+        <!-- Datos del apoderado -->
+        <TextView
+            android:layout_marginTop="24dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Datos del apoderado"
+            android:textColor="#4B197A"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <EditText
+            android:id="@+id/etNombresApoderadoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombres" />
+
+        <EditText
+            android:id="@+id/etApellidosApoderadoEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellidos" />
+
+        <EditText
+            android:id="@+id/etDocumentoIdentidadEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Documento de identidad"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/etCelularEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Celular"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/etDireccionEdit"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Dirección" />
+
+        <!-- Botón Guardar cambios centrado -->
+        <Button
+            android:id="@+id/btnGuardarEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="24dp"
+            android:backgroundTint="#4B197A"
+            android:textColor="#FFFFFF"
+            android:text="Guardar cambios" />
+    </LinearLayout>
+</ScrollView>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <EditText
+            android:id="@+id/update_nombre"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Nombres"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/update_apellidop"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Apellidos"
+            android:inputType="textPersonName" />
+
+
+        <EditText
+            android:id="@+id/update_ndc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Documento de identidad"
+            android:inputType="number" />
+        <EditText
+            android:id="@+id/update_celular"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Número Celular"
+            android:inputType="phone" />
+
+        <EditText
+            android:id="@+id/update_email"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="Correo Electrónico"
+            android:inputType="textEmailAddress" />
+
+
+    </LinearLayout>
+</ScrollView>

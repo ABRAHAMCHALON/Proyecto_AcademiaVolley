@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/mobile_navigation"
+    app:startDestination="@+id/nav_asistencia">
+
+    <fragment
+        android:id="@+id/nav_asistencia"
+        android:name="com.example.proyecto_academiavolley.ui.asistencia.AsistenciaFragment"
+        android:label="@string/menu_home"
+        tools:layout="@layout/fragment_asistencia" />
+
+    <fragment
+        android:id="@+id/nav_alumno"
+        android:name="com.example.proyecto_academiavolley.ui.alumno.AlumnoFragment"
+        android:label="@string/menu_gallery"
+        tools:layout="@layout/fragment_alumno" >
+        <action
+            android:id="@+id/action_nav_alumno_to_alumnoRegistrar"
+            app:destination="@id/alumnoRegistrar" />
+        <action
+            android:id="@+id/action_nav_alumno_to_alumnoEditar"
+            app:destination="@id/alumnoEditar" />
+        <action
+            android:id="@+id/action_nav_alumno_self"
+            app:destination="@id/nav_alumno" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/nav_slideshow"
+        android:name="com.example.proyecto_academiavolley.ui.slideshow.SlideshowFragment"
+        android:label="@string/menu_slideshow"
+        tools:layout="@layout/fragment_slideshow" />
+    <fragment
+        android:id="@+id/alumnoRegistrar"
+        android:name="com.example.proyecto_academiavolley.ui.alumno.AlumnoRegistrar"
+        android:label="fragment_alumno_registrar"
+        tools:layout="@layout/fragment_alumno_registrar" />
+    <fragment
+        android:id="@+id/alumnoEditar"
+        android:name="com.example.proyecto_academiavolley.ui.alumno.AlumnoEditar"
+        android:label="fragment_alumno_editar"
+        tools:layout="@layout/fragment_alumno_editar" >
+        <action
+            android:id="@+id/action_alumnoEditar_to_nav_alumno"
+            app:destination="@id/nav_alumno" />
+    </fragment>
+</navigation>
