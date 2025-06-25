@@ -12,5 +12,13 @@
             android:id="@+id/nav_alumno"
             android:icon="@drawable/ic_menu_alumno"
             android:title="@string/menu_alumno" />
+        <item
+            android:id="@+id/nav_grupo"
+            android:icon="@drawable/ic_menu_grupo"
+            android:title="@string/menu_grupo" />
+        <item
+            android:id="@+id/nav_grafico"
+            android:icon="@drawable/ic_menu_grafico"
+            android:title="@string/menu_grafico" />
     </group>
 </menu>

@@ -28,10 +28,17 @@
     </fragment>
 
     <fragment
-        android:id="@+id/nav_slideshow"
-        android:name="com.example.proyecto_academiavolley.ui.slideshow.SlideshowFragment"
+        android:id="@+id/nav_grupo"
+        android:name="com.example.proyecto_academiavolley.ui.grupo.GrupoFragment"
         android:label="@string/menu_slideshow"
-        tools:layout="@layout/fragment_slideshow" />
+        tools:layout="@layout/fragment_grupo" >
+        <action
+            android:id="@+id/action_nav_grupo_to_grupoRegistrar"
+            app:destination="@id/grupoRegistrar" />
+        <action
+            android:id="@+id/action_nav_grupo_self"
+            app:destination="@id/nav_grupo" />
+    </fragment>
     <fragment
         android:id="@+id/alumnoRegistrar"
         android:name="com.example.proyecto_academiavolley.ui.alumno.AlumnoRegistrar"
@@ -46,4 +53,9 @@
             android:id="@+id/action_alumnoEditar_to_nav_alumno"
             app:destination="@id/nav_alumno" />
     </fragment>
+    <fragment
+        android:id="@+id/grupoRegistrar"
+        android:name="com.example.proyecto_academiavolley.ui.grupo.GrupoRegistrar"
+        android:label="fragment_grupo_registrar"
+        tools:layout="@layout/fragment_grupo_registrar" />
 </navigation>
