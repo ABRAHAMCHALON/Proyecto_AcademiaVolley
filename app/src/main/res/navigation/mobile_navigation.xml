@@ -38,6 +38,9 @@
         <action
             android:id="@+id/action_nav_grupo_self"
             app:destination="@id/nav_grupo" />
+        <action
+            android:id="@+id/action_nav_grupo_to_grupoEditar"
+            app:destination="@id/grupoEditar" />
     </fragment>
     <fragment
         android:id="@+id/alumnoRegistrar"
@@ -58,4 +61,13 @@
         android:name="com.example.proyecto_academiavolley.ui.grupo.GrupoRegistrar"
         android:label="fragment_grupo_registrar"
         tools:layout="@layout/fragment_grupo_registrar" />
+    <fragment
+        android:id="@+id/grupoEditar"
+        android:name="com.example.proyecto_academiavolley.ui.grupo.GrupoEditar"
+        android:label="fragment_grupo_editar"
+        tools:layout="@layout/fragment_grupo_editar" >
+        <action
+            android:id="@+id/action_grupoEditar_to_nav_grupo"
+            app:destination="@id/nav_grupo" />
+    </fragment>
 </navigation>

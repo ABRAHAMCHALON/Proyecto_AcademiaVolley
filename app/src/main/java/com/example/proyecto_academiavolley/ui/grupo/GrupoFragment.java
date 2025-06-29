@@ -100,12 +100,12 @@ public class GrupoFragment extends Fragment implements View.OnClickListener {
 
             editar.setOnClickListener(v -> {
                 // Editar el grupo
-                //EditarGrupo(grupo.getId_grupo());
+                EditarGrupo(grupo.getId_grupo());
             });
 
             eliminar.setOnClickListener(v -> {
                 // Eliminar el grupo
-                //EliminarGrupo(grupo.getId_grupo());
+                EliminarGrupo(grupo.getId_grupo());
             });
 
             return convertView;
@@ -162,7 +162,7 @@ public class GrupoFragment extends Fragment implements View.OnClickListener {
         });
     }
 
-    /*
+
     private void EditarGrupo(String idGrupo) {
         // Enviar el ID del grupo al fragmento de edición
         Bundle bundle = new Bundle();
@@ -174,7 +174,7 @@ public class GrupoFragment extends Fragment implements View.OnClickListener {
 
     private void EliminarGrupo(String idGrupo) {
         // Crear la URL para hacer la solicitud
-        String url = "http://tu_servidor.com/grupo_eliminar.php";
+        String url = servidor+"grupo_eliminar.php";
 
         // Crear un objeto RequestParams para almacenar los parámetros
         RequestParams params = new RequestParams();
@@ -202,7 +202,7 @@ public class GrupoFragment extends Fragment implements View.OnClickListener {
             }
         });
     }
-    */
+
 
     @Override
     public void onClick(View v) {
