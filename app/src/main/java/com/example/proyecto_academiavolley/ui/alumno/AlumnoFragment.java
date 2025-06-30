@@ -2,14 +2,19 @@ package com.example.proyecto_academiavolley.ui.alumno;
 
 import static com.example.proyecto_academiavolley.Login.servidor;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -20,6 +25,7 @@ import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.fragment.NavHostFragment;
 
+import com.example.proyecto_academiavolley.Login;
 import com.example.proyecto_academiavolley.R;
 import com.example.proyecto_academiavolley.databinding.FragmentAlumnoBinding;
 import com.loopj.android.http.AsyncHttpClient;
@@ -50,8 +56,120 @@ public class AlumnoFragment extends Fragment implements View.OnClickListener{
         boton.setOnClickListener(this);
 
         ListarAlumnos();
-
+        setHasOptionsMenu(true);
         return rootView;
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.busqueda_alumno, menu);
+
+        MenuItem searchItem = menu.findItem(R.id.action_buscar_dni);
+        SearchView searchView = (SearchView) searchItem.getActionView();
+        searchView.setQueryHint("Buscar por DNI");
+
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                buscarAlumnoPorDni(query); // Aquí llamas al método que consulta por DNI
+                return true;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false; // puedes implementar búsqueda en vivo si deseas
+            }
+
+            //------------------------------
+            private void buscarAlumnoPorDni(String dni) {
+
+                AsyncHttpClient client = new AsyncHttpClient();
+                RequestParams params = new RequestParams();
+                params.put("dni", dni);
+
+                client.post(Login.servidor + "alumno_buscar.php", params, new AsyncHttpResponseHandler() {
+                    @Override
+                    public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
+                        List<Alumno> alumnosEncontrados = new ArrayList<>();
+
+                        try {
+                            String response = new String(responseBody, "UTF-8");
+                            JSONArray jsonArray = new JSONArray(response);
+
+
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject obj = jsonArray.getJSONObject(i);
+
+                                Alumno alumno = new Alumno(
+                                        obj.getString("id"),
+                                        obj.getString("nombres"),
+                                        obj.getString("apellidos"),
+                                        obj.getString("ndc"),
+                                        obj.getString("edad"),
+                                        obj.getString("fnacimiento"),
+                                        obj.getString("grupo"),
+                                        obj.getString("horario"),
+                                        obj.getString("nombresApoderado"),
+                                        obj.getString("apellidosApoderado"),
+                                        obj.getString("cel"),
+                                        obj.getString("dir")
+                                );
+
+                                alumnosEncontrados.add(alumno);
+                            }
+
+                            actualizarListaAlumnos(alumnosEncontrados);
+
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(getContext(), "Error al procesar los datos", Toast.LENGTH_SHORT).show();
+                        }
+
+                        if (alumnosEncontrados.size() > 0) {
+                            Alumno alumno = alumnosEncontrados.get(0);
+                            mostrarDialogoAlumno(alumno);
+                        } else {
+                            Toast.makeText(getContext(), "No se encontró ningún alumno", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+
+                    private void mostrarDialogoAlumno(Alumno alumno) {
+                        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+                        builder.setTitle("Datos del Alumno");
+
+                        String mensaje = "Nombre: " + alumno.nombres + " " + alumno.apellidos + "\n"
+                                + "DNI: " + alumno.ndc + "\n"
+                                + "Edad: " + alumno.edad + "\n"
+                                + "Nacimiento: " + alumno.fnacimiento + "\n"
+                                + "Grupo: " + alumno.grupo + "\n"
+                                + "Horario: " + alumno.horario + "\n"
+                                + "Apoderado: " + alumno.nombresApoderado + " " + alumno.apellidosApoderado + "\n"
+                                + "Celular: " + alumno.cel + "\n"
+                                + "Dirección: " + alumno.dir;
+
+                        builder.setMessage(mensaje);
+
+                        builder.setPositiveButton("Cerrar", null);
+                        builder.show();
+                    }
+
+                    @Override
+                    public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
+                        Toast.makeText(getContext(), "Error de conexión con el servidor", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+            //------------------------------
+
+            private void actualizarListaAlumnos(List<Alumno> listaFiltrada) {
+                AlumnoAdapter adapter = new AlumnoAdapter(getActivity(), listaFiltrada);
+                lista.setAdapter(adapter);
+            }
+
+
+        });
+
+
     }
 
     public class AlumnoAdapter extends BaseAdapter {
