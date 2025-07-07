@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- EditText para escribir la fecha -->
+    <EditText
+        android:id="@+id/etFecha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Ingrese la fecha (DD-MM-YYYY)"
+        android:inputType="date"
+        android:importantForAccessibility="yes"
+        android:contentDescription="Campo de fecha de asistencia"
+        android:padding="10dp"/>
+
+    <!-- Botón para abrir el DatePicker -->
+    <Button
+        android:id="@+id/btnSeleccionarFecha"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Seleccionar fecha desde el calendario"
+        android:padding="10dp" />
+
+</LinearLayout>

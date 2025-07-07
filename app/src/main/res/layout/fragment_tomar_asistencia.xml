@@ -1,0 +1,33 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- TextView para el nombre del grupo -->
+    <TextView
+        android:id="@+id/textViewNombreGrupo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Nombre del grupo"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginBottom="16dp" /> <!-- Espacio debajo del TextView -->
+
+    <!-- ListView para mostrar los items -->
+    <ListView
+        android:id="@+id/listViewAsistencia"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" /> <!-- Usamos layout_weight para que el ListView ocupe el espacio disponible -->
+
+    <!-- Botón "Guardar asistencia" -->
+    <Button
+        android:id="@+id/btnGuardarAsistencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Guardar asistencia"
+        android:backgroundTint="@color/logo"
+        android:layout_marginTop="16dp" />
+
+</LinearLayout>

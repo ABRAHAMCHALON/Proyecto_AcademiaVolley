@@ -50,6 +50,44 @@
                 android:textColor="@android:color/black"
                 android:ellipsize="end"
                 android:maxLines="1"/>
+
+            <!-- Botones debajo de los textos -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center"
+                android:weightSum="2">
+
+                <!-- Botón para tomar asistencia -->
+                <Button
+                    android:id="@+id/btnTomarAsistencia"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Tomar asistencia"
+                    android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/logo"/> <!-- Cambiar el color aquí -->
+
+                <!-- Botón para listar asistencia -->
+                <Button
+                    android:id="@+id/btnListarAsistencia"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Ver registros"
+                    android:backgroundTint="@color/logo"/> <!-- Cambiar el color aquí -->
+
+            </LinearLayout>
+
+            <!-- TextView invisible para almacenar el ID del grupo -->
+            <TextView
+                android:id="@+id/tvIdGrupo"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:visibility="gone"/>  <!-- Hacerlo invisible -->
+
         </LinearLayout>
 
     </com.google.android.material.card.MaterialCardView>

@@ -3,6 +3,7 @@ package com.example.proyecto_academiavolley;
 import static com.example.proyecto_academiavolley.Login.servidor;
 
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
@@ -12,9 +13,15 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.android.material.navigation.NavigationView;
 
+import androidx.annotation.Nullable;
 import androidx.navigation.NavController;
 import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
@@ -43,6 +50,7 @@ public class MainActivity extends AppCompatActivity {
     ImageView navImage;
 
     String id_user;
+    String opc_asistencia, opc_alumno, opc_grupo;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,18 +60,17 @@ public class MainActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
 
         //--------------------------------------------------------------------
-        //recibir el id_usuario del login
+        // Recibir el id_usuario del login
         id_user = getIntent().getStringExtra("id_usuario");
 
-        //accerder al nav_header_main.xml
+        // Acceder al nav_header_main.xml
         View headerView = binding.navView.getHeaderView(0);
         navUsername = headerView.findViewById(R.id.NomUsu);
         navEmail = headerView.findViewById(R.id.EmailUsu);
         navImage = headerView.findViewById(R.id.imageView);
-
-        ConsultarUsuario(id_user);
         //--------------------------------------------------------------------
 
+        // Establecer la barra de acción
         setSupportActionBar(binding.appBarMain.toolbar);
         binding.appBarMain.fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -73,21 +80,31 @@ public class MainActivity extends AppCompatActivity {
                         .setAnchorView(R.id.fab).show();
             }
         });
+
+        // Inicializar DrawerLayout y NavigationView
         DrawerLayout drawer = binding.drawerLayout;
+
+        // Ahora inicializamos navigationView correctamente después de la inicialización de binding
         NavigationView navigationView = binding.navView;
+
+        // Consultar usuario para llenar la información en el encabezado
+        ConsultarUsuario(id_user, navigationView);
+
         // Passing each menu ID as a set of Ids because each
         // menu should be considered as top level destinations.
         mAppBarConfiguration = new AppBarConfiguration.Builder(
                 R.id.nav_asistencia, R.id.nav_alumno, R.id.nav_grupo)
                 .setOpenableLayout(drawer)
                 .build();
+
+        // Configurar NavController y NavigationUI
         NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_content_main);
         NavigationUI.setupActionBarWithNavController(this, navController, mAppBarConfiguration);
         NavigationUI.setupWithNavController(navigationView, navController);
     }
 
-    private void ConsultarUsuario(String idUsuario) {
-        String url = servidor+"usuario_consultar.php";
+    private void ConsultarUsuario(String idUsuario, NavigationView navigationView) {
+        String url = servidor + "usuario_consultar.php";
 
         RequestParams params = new RequestParams();
         params.put("id_usuario", idUsuario);
@@ -109,19 +126,31 @@ public class MainActivity extends AppCompatActivity {
                         String ape_usuario = jsonObject.getString("ape_usuario");
                         String cel_usuario = jsonObject.getString("cel_usuario");
                         String email_usuario = jsonObject.getString("email_usuario");
-                        //int foto_personal = jsonObject.getInt("foto_usuario");
+                        String foto_personal = jsonObject.getString("foto_usuario");
                         String nom_cargo = jsonObject.getString("nom_cargo");
-
+                        // Asignar los datos al header del NavigationView
                         navUsername.setText(nom_usuario);
                         navEmail.setText(email_usuario);
                         //foto_personal es una URL
-                        //Glide.with(getApplicationContext()).load(servidor+foto_personal).into(navImage);
+                       navImage.setImageResource(R.drawable.sinfoto);
+
+
+                        opc_asistencia = jsonObject.getString("opc_asistencia");
+                        opc_alumno = jsonObject.getString("opc_alumno");
+                        opc_grupo = jsonObject.getString("opc_grupo");
+
+                        if (opc_asistencia != null && opc_asistencia.equals("0")) {
+                            navigationView.getMenu().findItem(R.id.nav_asistencia).setVisible(false);
+                        }
+                        if (opc_alumno != null && opc_alumno.equals("0")) {
+                            navigationView.getMenu().findItem(R.id.nav_alumno).setVisible(false);
+                        }
+                        if (opc_grupo != null && opc_grupo.equals("0")) {
+                            navigationView.getMenu().findItem(R.id.nav_grupo).setVisible(false);
+                        }
 
 
                     }
-
-
-
                 } catch (JSONException e) {
                     e.printStackTrace();
                     Toast.makeText(getApplicationContext(), "Error al parsear el JSON", Toast.LENGTH_LONG).show();
@@ -131,12 +160,17 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
-
+                Log.e("Error de carga", "Código de estado: " + statusCode);
+                if (responseBody != null) {
+                    Log.e("Error de carga", new String(responseBody));
+                }
+                // Manejo del error
+                Toast.makeText(MainActivity.this, "Error al cargar la imagen", Toast.LENGTH_LONG).show();
             }
         });
-
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
@@ -146,7 +180,7 @@ public class MainActivity extends AppCompatActivity {
         logoutItem.setOnMenuItemClickListener(item -> {
 
             getSharedPreferences("usuario", MODE_PRIVATE).edit().clear().apply();
-            //dirigirme hacia el Login
+            // dirigirme hacia el Login
             Intent intent = new Intent(MainActivity.this, Inicio.class);
             startActivity(intent);
 
@@ -155,48 +189,38 @@ public class MainActivity extends AppCompatActivity {
 
         MenuItem passwordItem = menu.findItem(R.id.action_password);
         passwordItem.setOnMenuItemClickListener(item -> {
-            //mostrar AlertDialog para cambiar contraseña
-            // Crear un AlertDialog.Builder
+            // Mostrar AlertDialog para cambiar contraseña
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
             builder.setTitle("Cambiar Contraseña");
 
             // Inflar el layout personalizado para el AlertDialog
             View viewInflated = getLayoutInflater().inflate(R.layout.dialog_change_password, null);
-            // Set up the input
             final android.widget.EditText inputOldPassword = viewInflated.findViewById(R.id.old_password);
             final android.widget.EditText inputNewPassword = viewInflated.findViewById(R.id.new_password);
             final android.widget.EditText inputConfirmPassword = viewInflated.findViewById(R.id.confirm_password);
 
             builder.setView(viewInflated);
 
-            // Configurar los botones
             builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                 dialog.dismiss();
-                // Aquí puedes manejar la lógica para cambiar la contraseña
                 String oldPassword = inputOldPassword.getText().toString();
                 String newPassword = inputNewPassword.getText().toString();
                 String confirmPassword = inputConfirmPassword.getText().toString();
 
-                // Validar que la nueva contraseña coincida con la confirmación
                 if (!newPassword.equals(confirmPassword)) {
                     Toast.makeText(this, "Las contraseñas no coinciden", Toast.LENGTH_LONG).show();
                     return;
                 }
-                //validar que la contraseña antigua no se igual a la nueva
                 if (newPassword.equals(oldPassword)) {
                     Toast.makeText(this, "La nueva contraseña no puede ser igual a la antigua", Toast.LENGTH_LONG).show();
                     return;
                 }
-                //los campos deben estar llenos
                 if (oldPassword.isEmpty() || newPassword.isEmpty() || confirmPassword.isEmpty()) {
                     Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_LONG).show();
                     return;
                 }
                 Log.d("DEBUG_CALL", "ID antes de cambiar contraseña: " + id_user);
-                CambiarContrasena(id_user,newPassword);
-
-                // Por ejemplo, mostrar un Toast con las contraseñas ingresadas
-                //Toast.makeText(this, "Antigua: " + oldPassword + ", Nueva: " + newPassword + ", Confirmar: " + confirmPassword, Toast.LENGTH_LONG).show();
+                CambiarContrasena(id_user, newPassword);
             });
             builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
 
@@ -208,48 +232,33 @@ public class MainActivity extends AppCompatActivity {
         MenuItem actualizarItem = menu.findItem(R.id.action_datos);
         actualizarItem.setOnMenuItemClickListener(item -> {
 
-            //Mostrar un alertdialog para actualizar los datos
-            // Crear un AlertDialog.Builder
             android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this);
             builder.setTitle("Actualizar Datos");
 
             // Inflar el layout personalizado para el AlertDialog
             View viewInflated = getLayoutInflater().inflate(R.layout.dialog_actualizar_usuario, null);
-            // Set up the input
             final android.widget.EditText inputNombre = viewInflated.findViewById(R.id.update_nombre);
             final android.widget.EditText inputApellido = viewInflated.findViewById(R.id.update_apellidop);
             final android.widget.EditText inputDni = viewInflated.findViewById(R.id.update_ndc);
             final android.widget.EditText inputCelular = viewInflated.findViewById(R.id.update_celular);
             final android.widget.EditText inputEmail = viewInflated.findViewById(R.id.update_email);
 
-
-            // Obtener datos actuales y establecerlos en los EditText
-            // (Esto asume que tienes una forma de obtener los datos actuales del usuario)
-            // Por ejemplo:
-            // inputNombre.setText(currentUser.getNombre());
-            // inputApellidoP.setText(currentUser.getApellidoP());
-            // ...
-
             builder.setView(viewInflated);
 
-            // Configurar los botones
             builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                 dialog.dismiss();
-                // Aquí puedes manejar la lógica para actualizar los datos
                 String nombre = inputNombre.getText().toString();
                 String apellido = inputApellido.getText().toString();
                 String dni = inputDni.getText().toString();
                 String celular = inputCelular.getText().toString();
                 String email = inputEmail.getText().toString();
 
-                // Validar que los campos no estén vacíos si es necesario
-                if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || celular.isEmpty() || email.isEmpty() ) {
+                if (nombre.isEmpty() || apellido.isEmpty() || dni.isEmpty() || celular.isEmpty() || email.isEmpty()) {
                     Toast.makeText(this, "Por favor, complete todos los campos", Toast.LENGTH_LONG).show();
                     return;
                 }
-                // Actualizar datos del usuario, incluyendo el DNI
-                ActualizarDatosUsuario(id_user, nombre, apellido, dni, celular,email);
-            }); // Cierre del setPositiveButton
+                ActualizarDatosUsuario(id_user, nombre, apellido, dni, celular, email);
+            });
             builder.setNegativeButton(android.R.string.cancel, (dialog, which) -> dialog.cancel());
             builder.show();
             return true;
@@ -257,6 +266,7 @@ public class MainActivity extends AppCompatActivity {
 
         return true;
     }
+
     private void CambiarContrasena(String idUsuario, String nuevaPassword) {
         String url = servidor + "cambiar_password.php";
 
@@ -288,7 +298,6 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Toast.makeText(MainActivity.this, "Fallo en la conexión con el servidor", Toast.LENGTH_LONG).show();
@@ -296,7 +305,7 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
-    private void ActualizarDatosUsuario(String idUsuario, String nombre, String apellido, String dni, String celular,String email) {
+    private void ActualizarDatosUsuario(String idUsuario, String nombre, String apellido, String dni, String celular, String email) {
         String url = servidor + "actualizar_datos_usuario.php"; // Asegúrate de que este endpoint exista y funcione
 
         RequestParams params = new RequestParams();
@@ -306,7 +315,6 @@ public class MainActivity extends AppCompatActivity {
         params.put("ndc_usuario", dni);
         params.put("cel_usuario", celular);
         params.put("email_usuario", email);
-
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.post(url, params, new AsyncHttpResponseHandler() {
@@ -321,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
 
                     if (success) {
                         Toast.makeText(MainActivity.this, "Datos actualizados correctamente", Toast.LENGTH_LONG).show();
-                        ConsultarUsuario(id_user); // Actualizar la UI del NavHeader
+                        ConsultarUsuario(id_user, binding.navView); // Actualizar la UI del NavHeader
                     } else {
                         Toast.makeText(MainActivity.this, "Error: " + message, Toast.LENGTH_LONG).show();
                     }
@@ -330,6 +338,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(MainActivity.this, "Error al procesar la respuesta", Toast.LENGTH_LONG).show();
                 }
             }
+
             @Override
             public void onFailure(int statusCode, Header[] headers, byte[] responseBody, Throwable error) {
                 Toast.makeText(MainActivity.this, "Fallo en la conexión con el servidor", Toast.LENGTH_LONG).show();

@@ -2,19 +2,22 @@ package com.example.proyecto_academiavolley.ui.alumno;
 
 import static com.example.proyecto_academiavolley.Login.servidor;
 
+import android.app.DatePickerDialog;
 import android.os.Bundle;
-
-import androidx.fragment.app.Fragment;
-
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.Spinner;
 import android.widget.Toast;
+
+import androidx.fragment.app.Fragment;
 
 import com.example.proyecto_academiavolley.R;
 import com.example.proyecto_academiavolley.ui.Item;
@@ -28,16 +31,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import cz.msebera.android.httpclient.Header;
 
-
 public class AlumnoRegistrar extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
-    int idSex=-1, idHorario = -1, idEstado = -1;
+    int idSex = -1, idHorario = -1, idEstado = -1;
 
-    private EditText nomAlum,apeAlum,dni,edad,fnac,nomApo,apeApo,dniApo,cel,dir;
-    private Spinner sex,hor,est;
+    private EditText nomAlum, apeAlum, dni, edad, fnac, nomApo, apeApo, dniApo, cel, dir;
+    private Spinner sex, hor, est;
     private Button reg;
 
     @Override
@@ -46,90 +49,95 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_alumno_registrar, container, false);
 
-        nomAlum = (EditText) rootView.findViewById(R.id.etNombresEstudiante);
-        apeAlum = (EditText) rootView.findViewById(R.id.etApellidosEstudiante);
-        dni = (EditText) rootView.findViewById(R.id.etDniEstudiante);
-        edad = (EditText) rootView.findViewById(R.id.etEdadEstudiante);
-        fnac = (EditText) rootView.findViewById(R.id.etFechaNacimiento);
-        sex = (Spinner) rootView.findViewById(R.id.spinnerSexo);
+        // Inicializar campos de texto y botones
+        nomAlum = rootView.findViewById(R.id.etNombresEstudiante);
+        apeAlum = rootView.findViewById(R.id.etApellidosEstudiante);
+        dni = rootView.findViewById(R.id.etDniEstudiante);
+        edad = rootView.findViewById(R.id.etEdadEstudiante);
+        fnac = rootView.findViewById(R.id.etFechaNacimiento);
+        sex = rootView.findViewById(R.id.spinnerSexo);
         sex.setOnItemSelectedListener(this);
-        hor = (Spinner) rootView.findViewById(R.id.spinnerHorario);
+        hor = rootView.findViewById(R.id.spinnerHorario);
         hor.setOnItemSelectedListener(this);
-        est = (Spinner) rootView.findViewById(R.id.spinnerEstado);
+        est = rootView.findViewById(R.id.spinnerEstado);
         est.setOnItemSelectedListener(this);
 
-        nomApo = (EditText) rootView.findViewById(R.id.etNombresApoderado);
-        apeApo = (EditText) rootView.findViewById(R.id.etApellidosApoderado);
-        dniApo = (EditText) rootView.findViewById(R.id.etDocumentoIdentidad);
-        cel = (EditText) rootView.findViewById(R.id.etCelular);
-        dir = (EditText) rootView.findViewById(R.id.etDireccion);
+        nomApo = rootView.findViewById(R.id.etNombresApoderado);
+        apeApo = rootView.findViewById(R.id.etApellidosApoderado);
+        dniApo = rootView.findViewById(R.id.etDocumentoIdentidad);
+        cel = rootView.findViewById(R.id.etCelular);
+        dir = rootView.findViewById(R.id.etDireccion);
 
-        reg = (Button) rootView.findViewById(R.id.btnRegistrar);
+        reg = rootView.findViewById(R.id.btnRegistrar);
         reg.setOnClickListener(this);
 
+        // Obtener los datos para los spinners
         ObtenerSexo();
         ObtenerHorario();
         ObtenerEstado();
 
+        // Al hacer click en el campo de fecha de nacimiento, abrir el DatePicker
+        fnac.setOnClickListener(v -> showDatePickerDialog());
+
         return rootView;
     }
 
-    private void ObtenerHorario() {
+    // Mostrar el DatePickerDialog para seleccionar la fecha de nacimiento
+    // Mostrar el DatePickerDialog para seleccionar la fecha de nacimiento
+    private void showDatePickerDialog() {
+        // Obtener la fecha actual
+        Calendar calendar = Calendar.getInstance();
 
-        String url =  servidor+"horario_mostrar.php";
+        // Establecer la fecha del DatePickerDialog con la fecha actual
+        int year = calendar.get(Calendar.YEAR);
+        int month = calendar.get(Calendar.MONTH);
+        int day = calendar.get(Calendar.DAY_OF_MONTH);
 
-        AsyncHttpClient client = new AsyncHttpClient();
-        client.get(url, new JsonHttpResponseHandler() {
-            @Override
-            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+        // Crear el DatePickerDialog
+        DatePickerDialog datePickerDialog = new DatePickerDialog(getActivity(),
+                (view, yearSelected, monthOfYear, dayOfMonth) -> {
+                    // Asegurarse de que el día y el mes tengan siempre dos dígitos
+                    String formattedDay = String.format("%02d", dayOfMonth); // "03" en vez de "3"
+                    String formattedMonth = String.format("%02d", monthOfYear + 1); // "03" en vez de "3"
 
-                ArrayList<Item> lista = new ArrayList<>();
+                    // Establecer la fecha seleccionada en el EditText
+                    String selectedDate = formattedDay + "-" + formattedMonth + "-" + yearSelected;
+                    fnac.setText(selectedDate);
 
-                lista.add(new Item(-1, "Seleccionar horario"));
+                    // Calcular la edad automáticamente
+                    int edadCalculated = calculateAge(yearSelected, monthOfYear, dayOfMonth);
+                    edad.setText(String.valueOf(edadCalculated)); // Mostrar la edad en el campo
+                }, year, month, day);
 
-                //Respuesta del servidor
-                for (int i = 0; i < response.length(); i++) {
-                    try {
-                        JSONObject obj = response.getJSONObject(i);
-                        int id = obj.getInt("id");
-                        String nombre = obj.getString("nombre");
-                        lista.add(new Item(id, nombre));
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
-                //Llena el Spinner
-                ArrayAdapter<Item> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, lista);
-                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                hor.setAdapter(adapter);
-
-
-            }
-
-            @Override
-            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
-                Toast.makeText(getActivity(), "Error al cargar datos", Toast.LENGTH_SHORT).show();
-            }
-        });
-
+        datePickerDialog.show();
     }
 
-    private void ObtenerSexo() {
+    // Método para calcular la edad en base a la fecha de nacimiento
+    private int calculateAge(int birthYear, int birthMonth, int birthDay) {
+        Calendar today = Calendar.getInstance();
 
-        String url =  servidor+"sexo_mostrar.php";
+        int age = today.get(Calendar.YEAR) - birthYear;
+
+        // Ajustar si el cumpleaños aún no ha ocurrido este año
+        if (today.get(Calendar.MONTH) < birthMonth || (today.get(Calendar.MONTH) == birthMonth && today.get(Calendar.DAY_OF_MONTH) < birthDay)) {
+            age--;
+        }
+
+        return age;
+    }
+
+    // Obtener los datos para el Spinner de Sexo
+    private void ObtenerSexo() {
+        String url = servidor + "sexo_mostrar.php";
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-
                 ArrayList<Item> lista = new ArrayList<>();
-
                 lista.add(new Item(-1, "Seleccionar sexo"));
 
-                //Respuesta del servidor
+                // Respuesta del servidor
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject obj = response.getJSONObject(i);
@@ -141,13 +149,10 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
                     }
                 }
 
-
-                //Llena el Spinner
+                // Llenar el Spinner
                 ArrayAdapter<Item> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, lista);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
                 sex.setAdapter(adapter);
-
-
             }
 
             @Override
@@ -155,23 +160,20 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
                 Toast.makeText(getActivity(), "Error al cargar datos", Toast.LENGTH_SHORT).show();
             }
         });
-
     }
 
-    private void ObtenerEstado() {
-
-        String url =  servidor+"estado_mostrar.php";
+    // Obtener los datos para el Spinner de Horario
+    private void ObtenerHorario() {
+        String url = servidor + "horario_mostrar.php";
 
         AsyncHttpClient client = new AsyncHttpClient();
         client.get(url, new JsonHttpResponseHandler() {
             @Override
             public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
-
                 ArrayList<Item> lista = new ArrayList<>();
+                lista.add(new Item(-1, "Seleccionar horario"));
 
-                lista.add(new Item(-1, "Seleccionar estado"));
-
-                //Respuesta del servidor
+                // Respuesta del servidor
                 for (int i = 0; i < response.length(); i++) {
                     try {
                         JSONObject obj = response.getJSONObject(i);
@@ -183,13 +185,10 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
                     }
                 }
 
-
-                //Llena el Spinner
+                // Llenar el Spinner
                 ArrayAdapter<Item> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, lista);
                 adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-                est.setAdapter(adapter);
-
-
+                hor.setAdapter(adapter);
             }
 
             @Override
@@ -197,73 +196,76 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
                 Toast.makeText(getActivity(), "Error al cargar datos", Toast.LENGTH_SHORT).show();
             }
         });
+    }
 
+    // Obtener los datos para el Spinner de Estado
+    private void ObtenerEstado() {
+        String url = servidor + "estado_mostrar.php";
+
+        AsyncHttpClient client = new AsyncHttpClient();
+        client.get(url, new JsonHttpResponseHandler() {
+            @Override
+            public void onSuccess(int statusCode, Header[] headers, JSONArray response) {
+                ArrayList<Item> lista = new ArrayList<>();
+                lista.add(new Item(-1, "Seleccionar estado"));
+
+                // Respuesta del servidor
+                for (int i = 0; i < response.length(); i++) {
+                    try {
+                        JSONObject obj = response.getJSONObject(i);
+                        int id = obj.getInt("id");
+                        String nombre = obj.getString("nombre");
+                        lista.add(new Item(id, nombre));
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                // Llenar el Spinner
+                ArrayAdapter<Item> adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, lista);
+                adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                est.setAdapter(adapter);
+            }
+
+            @Override
+            public void onFailure(int statusCode, Header[] headers, Throwable throwable, JSONObject errorResponse) {
+                Toast.makeText(getActivity(), "Error al cargar datos", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
     public void onClick(View v) {
-        if(v==reg) //si presiono e boton registrar
-        {
-            String nombreAlumno  = nomAlum.getText().toString();
+        if (v == reg) {
+            // Recoger los valores de los campos
+            String nombreAlumno = nomAlum.getText().toString();
             String apellidoAlumno = apeAlum.getText().toString();
             String dniAlumno = dni.getText().toString();
             String edadAlumno = edad.getText().toString();
             String fechaNacimiento = fnac.getText().toString();
-            // idSex ya se obtiene en onItemSelected
-            // idHorario ya se obtiene en onItemSelected
             String nombreApoderado = nomApo.getText().toString();
             String apellidoApoderado = apeApo.getText().toString();
             String dniApoderado = dniApo.getText().toString();
             String celularApoderado = cel.getText().toString();
             String direccionApoderado = dir.getText().toString();
-            //Completar con los demas campos
 
-
-            //Validaciones
-            if(nombreAlumno.isEmpty() || apellidoAlumno.isEmpty() || dniAlumno.isEmpty() || edadAlumno.isEmpty() || fechaNacimiento.isEmpty() || nombreApoderado.isEmpty() || apellidoApoderado.isEmpty() || dniApoderado.isEmpty() || celularApoderado.isEmpty() || direccionApoderado.isEmpty())
-            {
+            // Validar los campos
+            if (nombreAlumno.isEmpty() || apellidoAlumno.isEmpty() || dniAlumno.isEmpty() || edadAlumno.isEmpty() || fechaNacimiento.isEmpty() || nombreApoderado.isEmpty() || apellidoApoderado.isEmpty() || dniApoderado.isEmpty() || celularApoderado.isEmpty() || direccionApoderado.isEmpty()) {
                 Toast.makeText(getActivity(), "Por favor, complete todos los campos", Toast.LENGTH_SHORT).show();
-            }
-            else if (idSex == -1)
-            {
+            } else if (idSex == -1) {
                 Toast.makeText(getActivity(), "Por favor, seleccione una opción", Toast.LENGTH_SHORT).show();
-            }
-            else  if (idHorario == -1)
-            {
+            } else if (idHorario == -1) {
                 Toast.makeText(getActivity(), "Por favor, seleccione una opción", Toast.LENGTH_SHORT).show();
-            }
-            else  if (idEstado == -1)
-            {
+            } else if (idEstado == -1) {
                 Toast.makeText(getActivity(), "Por favor, seleccione una opción", Toast.LENGTH_SHORT).show();
-            }
-            else
-            {
-                RegistrarAlumno(nombreAlumno, apellidoAlumno, dniAlumno, edadAlumno, fechaNacimiento,idSex, idHorario, idEstado, nombreApoderado, apellidoApoderado, dniApoderado, celularApoderado, direccionApoderado);
+            } else {
+                RegistrarAlumno(nombreAlumno, apellidoAlumno, dniAlumno, edadAlumno, fechaNacimiento, idSex, idHorario, idEstado, nombreApoderado, apellidoApoderado, dniApoderado, celularApoderado, direccionApoderado);
             }
         }
-
     }
 
-    private void LimpiarCampos()
-    {
-        nomAlum.setText("");
-        apeAlum.setText("");
-        dni.setText("");
-        edad.setText("");
-        fnac.setText("");
-        sex.setSelection(0);
-        hor.setSelection(0);
-        est.setSelection(0);
-        nomApo.setText("");
-        apeApo.setText("");
-        dniApo.setText("");
-        cel.setText("");
-        dir.setText("");
-        nomAlum.requestFocus();
-
-    }
-    public void RegistrarAlumno(String nombreAlumno, String apellidoAlumno, String dniAlumno, String edadAlumno, String fechaNacimiento, int idSexo, int idHorario, int idEstado, String nombreApoderado, String apellidoApoderado, String dniApoderado, String celularApoderado, String direccionApoderado ) {
-
+    // Método para registrar al alumno
+    public void RegistrarAlumno(String nombreAlumno, String apellidoAlumno, String dniAlumno, String edadAlumno, String fechaNacimiento, int idSexo, int idHorario, int idEstado, String nombreApoderado, String apellidoApoderado, String dniApoderado, String celularApoderado, String direccionApoderado) {
         // Crear la URL para hacer la solicitud
         String url = servidor + "alumno_registrar.php"; //TODO: CAMBIAR PHP
 
@@ -282,7 +284,6 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
         params.put("dniApo", dniApoderado);
         params.put("cel", celularApoderado);
         params.put("dir", direccionApoderado);
-
 
         // Crear una instancia de AsyncHttpClient
         AsyncHttpClient client = new AsyncHttpClient();
@@ -304,63 +305,38 @@ public class AlumnoRegistrar extends Fragment implements View.OnClickListener, A
         });
     }
 
+    // Limpiar los campos después del registro
+    private void LimpiarCampos() {
+        nomAlum.setText("");
+        apeAlum.setText("");
+        dni.setText("");
+        edad.setText("");
+        fnac.setText("");
+        sex.setSelection(0);
+        hor.setSelection(0);
+        est.setSelection(0);
+        nomApo.setText("");
+        apeApo.setText("");
+        dniApo.setText("");
+        cel.setText("");
+        dir.setText("");
+        nomAlum.requestFocus();
+    }
+
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if(parent==sex)
-        { //TODO: Cambiar cat por sex
+        if (parent == sex) {
             Item selectedItem = (Item) parent.getItemAtPosition(position);
             idSex = selectedItem.id;
-            // Verifica si es el item "Seleccionar categoría"
-            if (selectedItem.id == -1) {
-                // No hacer nada si es la opción "Seleccionar categoría"
-                //Toast.makeText(getActivity(), "Por favor, seleccione una categoría", Toast.LENGTH_SHORT).show();
-            } else {
-                // Si no es el item ficticio, maneja la selección normalmente
-                int selectedId = selectedItem.id;
-                String selectedNombre = selectedItem.nombre;
-                //Toast.makeText(getActivity(), "Seleccionado: " + selectedId + " - " + selectedNombre, Toast.LENGTH_SHORT).show();
-                //idCat = selectedId; //TODO: No es necesario, idSex ya tiene el valor
-            }
-        }
-        else if(parent==hor) //TODO: Cambiar mar por hor
-        {
+        } else if (parent == hor) {
             Item selectedItem = (Item) parent.getItemAtPosition(position);
             idHorario = selectedItem.id;
-
-            // Verifica si es el item "Seleccionar marca"
-            if (selectedItem.id == -1) {
-                // No hacer nada si es la opción "Seleccionar marca"
-                //Toast.makeText(getActivity(), "Por favor, seleccione una marca", Toast.LENGTH_SHORT).show();
-            } else {
-                // Si no es el item ficticio, maneja la selección normalmente
-                int selectedId = selectedItem.id;
-                String selectedNombre = selectedItem.nombre;
-                //Toast.makeText(getActivity(), "Seleccionado: " + selectedId + " - " + selectedNombre, Toast.LENGTH_SHORT).show();
-                //idMar = selectedId; //TODO: No es necesario, idHorario ya tiene el valor
-            }
-        }
-        else if(parent==est)
-        {
+        } else if (parent == est) {
             Item selectedItem = (Item) parent.getItemAtPosition(position);
             idEstado = selectedItem.id;
-
-            // Verifica si es el item "Seleccionar marca"
-            if (selectedItem.id == -1) {
-                // No hacer nada si es la opción "Seleccionar marca"
-                //Toast.makeText(getActivity(), "Por favor, seleccione una marca", Toast.LENGTH_SHORT).show();
-            } else {
-                // Si no es el item ficticio, maneja la selección normalmente
-                int selectedId = selectedItem.id;
-                String selectedNombre = selectedItem.nombre;
-                //Toast.makeText(getActivity(), "Seleccionado: " + selectedId + " - " + selectedNombre, Toast.LENGTH_SHORT).show();
-                //idMar = selectedId; //TODO: No es necesario, idHorario ya tiene el valor
-            }
         }
-
     }
 
     @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
-    }
+    public void onNothingSelected(AdapterView<?> parent) {}
 }

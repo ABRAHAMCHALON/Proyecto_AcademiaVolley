@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:padding="12dp"
+    android:background="?android:attr/selectableItemBackground">
+
+    <!-- Nombres del alumno -->
+    <TextView
+        android:id="@+id/tvNombreAlumno"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Nombre del alumno"
+        android:textSize="16sp"
+        android:paddingEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Apellidos del alumno -->
+    <TextView
+        android:id="@+id/tvApellidoAlumno"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:text="Apellido del alumno"
+        android:textSize="16sp"
+        android:paddingEnd="8dp"
+        android:ellipsize="end"
+        android:maxLines="1" />
+
+    <!-- Tipo de asistencia (Asistió/Faltó) -->
+    <TextView
+        android:id="@+id/tvTipoAsistencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tipo de Asistencia"
+        android:textSize="16sp"
+        android:gravity="end"
+        android:paddingStart="8dp" />
+    <TextView
+        android:id="@+id/tvIdVerAsistencia"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="gone" />  <!-- Hacerlo invisible -->
+
+</LinearLayout>

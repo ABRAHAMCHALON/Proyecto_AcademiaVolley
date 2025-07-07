@@ -1,7 +1,7 @@
 package com.example.proyecto_academiavolley.ui.asistencia;
 
 public class Grupo {
-    private String id_grupo;
+    String id_grupo;
     private String nom_grupo;
     private String dias_horario;
     private String hinicio_horario;

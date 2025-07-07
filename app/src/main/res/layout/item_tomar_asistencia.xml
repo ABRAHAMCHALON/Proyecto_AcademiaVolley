@@ -1,0 +1,70 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="16dp">
+
+    <!-- Fila para los TextViews "Nombres" y "Apellidos" -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="2">
+
+        <!-- TextView para "Nombres" -->
+        <TextView
+            android:id="@+id/textViewNombres"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Nombres"
+            android:textSize="16sp" />
+
+        <!-- TextView para "Apellidos" -->
+        <TextView
+            android:id="@+id/textViewApellidos"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Apellidos"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <!-- RadioGroup para los RadioButtons "Asistió" y "Faltó" -->
+    <RadioGroup
+        android:id="@+id/radioGroupAsistencia"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="end"
+        android:paddingTop="8dp">
+
+        <!-- RadioButton para "Asistió" -->
+        <RadioButton
+            android:id="@+id/radioButtonAsistio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Asistió"
+            android:layout_marginEnd="16dp"
+            android:minHeight="36dp" />  <!-- Reducir la altura -->
+
+        <!-- RadioButton para "Faltó" -->
+        <RadioButton
+            android:id="@+id/radioButtonFalto"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Faltó"
+            android:minHeight="36dp" />  <!-- Reducir la altura -->
+
+    </RadioGroup>
+
+    <!-- TextView invisible para almacenar el ID del alumno -->
+    <TextView
+        android:id="@+id/tvIdAlumno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:visibility="gone" />  <!-- Hacerlo invisible -->
+
+</LinearLayout>

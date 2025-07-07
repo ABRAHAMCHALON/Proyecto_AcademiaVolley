@@ -2,19 +2,27 @@ package com.example.proyecto_academiavolley.ui.asistencia;
 
 import static com.example.proyecto_academiavolley.Login.servidor;
 
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.Button;
+import android.widget.DatePicker;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
+import androidx.navigation.NavController;
+import androidx.navigation.Navigation;
 
 import com.example.proyecto_academiavolley.R;
 import com.loopj.android.http.AsyncHttpClient;
@@ -26,23 +34,24 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
+import java.util.Locale;
 
 import cz.msebera.android.httpclient.Header;
 
-public class AsistenciaFragment extends Fragment {
+public class AsistenciaFragment extends Fragment{
 
     ListView lista;
     List<Grupo> gruposList = new ArrayList<>();
+
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         // Infla el layout de tu fragmento
         View rootView = inflater.inflate(R.layout.fragment_asistencia, container, false);
-
         lista = rootView.findViewById(R.id.listViewGrupos);  // Asegúrate de que el ID de ListView coincida
-
         // Llamar a la función para listar los grupos
         ListarGrupos();
 
@@ -83,6 +92,7 @@ public class AsistenciaFragment extends Fragment {
             }
 
             // Obtener los elementos de la vista
+            TextView id = convertView.findViewById(R.id.tvIdGrupo);
             TextView nombreGrupo = convertView.findViewById(R.id.nombreGrupo);
             TextView diasGrupo = convertView.findViewById(R.id.diasGrupo);
             TextView horarioGrupo = convertView.findViewById(R.id.horarioGrupo);
@@ -91,12 +101,82 @@ public class AsistenciaFragment extends Fragment {
             Grupo grupo = grupoList.get(position);
 
             // Asignar los valores
+            id.setText(grupo.id_grupo);
             nombreGrupo.setText(grupo.getNom_grupo());
             diasGrupo.setText("Días: " + grupo.getDias_horario());
             horarioGrupo.setText("Horario: " + grupo.getHinicio_horario() + " - " + grupo.getHfin_horario());
+            Button btnAsistencia = convertView.findViewById(R.id.btnTomarAsistencia);
+            Button btnVerAsistencia = convertView.findViewById(R.id.btnListarAsistencia);
 
+
+
+            btnAsistencia.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    TomarAsistencia(grupo.id_grupo);
+                }
+            });
+
+            btnVerAsistencia.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    //mostrar AlertDialog para ingresar la fecha
+                    mostrarDialogoFecha(grupo.id_grupo);
+                }
+            });
             return convertView;
         }
+
+    }
+
+    private void mostrarDialogoFecha(String idGrupo) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+        LayoutInflater inflater = requireActivity().getLayoutInflater();
+        View dialogView = inflater.inflate(R.layout.dialog_fecha, null);
+        builder.setView(dialogView);
+
+        EditText etFecha = dialogView.findViewById(R.id.etFecha);
+
+        // Configurar el botón para abrir el DatePickerDialog
+        Button btnSeleccionarFecha = dialogView.findViewById(R.id.btnSeleccionarFecha);
+        btnSeleccionarFecha.setOnClickListener(v -> {
+            final Calendar c = Calendar.getInstance();
+            int anio = c.get(Calendar.YEAR);
+            int mes = c.get(Calendar.MONTH);
+            int dia = c.get(Calendar.DAY_OF_MONTH);
+
+            DatePickerDialog datePickerDialog = new DatePickerDialog(getContext(),
+                    (view, year, monthOfYear, dayOfMonth) -> {
+                        // Mostrar la fecha seleccionada en el EditText
+                        etFecha.setText(String.format(Locale.getDefault(), "%04d-%02d-%02d", year, monthOfYear + 1, dayOfMonth));
+                    }, anio, mes, dia);
+            datePickerDialog.show();
+        });
+
+        // Acción para el botón "Ver Asistencia"
+        builder.setPositiveButton("Ver Asistencia", (dialog, which) -> {
+            String fechaSeleccionada = etFecha.getText().toString();
+            if (!fechaSeleccionada.isEmpty()) {
+                VerAsistencia(idGrupo, fechaSeleccionada); // Tu método para manejar la asistencia
+            } else {
+                Toast.makeText(getContext(), "Por favor, seleccione una fecha", Toast.LENGTH_SHORT).show();
+            }
+        });
+
+        // Acción para el botón "Cancelar"
+        builder.setNegativeButton("Cancelar", (dialog, which) -> dialog.cancel());
+
+        builder.show();
+    }
+
+
+    private void TomarAsistencia(String idGrupo) {
+
+        Bundle bundle = new Bundle();
+        bundle.putString("idGrupo", idGrupo);
+
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
+        navController.navigate(R.id.action_nav_asistencia_to_tomarAsistencia,bundle);
     }
 
     // Función para listar los grupos desde la API
@@ -157,5 +237,14 @@ public class AsistenciaFragment extends Fragment {
                 Toast.makeText(getActivity(), "Error: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
+    }
+
+    private void VerAsistencia(String idGrupo, String fecha){
+        Bundle bundle = new Bundle();
+        bundle.putString("idGrupo", idGrupo);
+        bundle.putString("fecha", fecha);
+
+        NavController navController = Navigation.findNavController(getActivity(), R.id.nav_host_fragment_content_main);
+        navController.navigate(R.id.action_nav_asistencia_to_verRegistrosAsistencia, bundle);
     }
 }
