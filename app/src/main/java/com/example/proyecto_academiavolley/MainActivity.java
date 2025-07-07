@@ -132,7 +132,9 @@ public class MainActivity extends AppCompatActivity {
                         navUsername.setText(nom_usuario);
                         navEmail.setText(email_usuario);
                         //foto_personal es una URL
-                       navImage.setImageResource(R.drawable.sinfoto);
+                        Glide.with(getApplicationContext())
+                                .load(servidor+foto_personal);
+
 
 
                         opc_asistencia = jsonObject.getString("opc_asistencia");

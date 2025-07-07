@@ -4,15 +4,15 @@
     <item
         android:id="@+id/action_datos"
         android:orderInCategory="100"
-        android:title="Actualizar datos"
+        android:title="Editar perfil"
         app:showAsAction="never" />
     <item
         android:id="@+id/action_password"
         android:orderInCategory="101"
-        android:title="Cambiar Contraseña" />
+        android:title="Cambiar contraseña" />
 
     <item
         android:id="@+id/action_salir"
         android:orderInCategory="102"
-        android:title="Cerrar Sesión" />
+        android:title="Cerrar sesión" />
 </menu>

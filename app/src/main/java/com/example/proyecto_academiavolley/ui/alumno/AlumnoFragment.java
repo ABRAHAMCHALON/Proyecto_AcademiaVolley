@@ -6,6 +6,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -246,6 +247,10 @@ public class AlumnoFragment extends Fragment implements View.OnClickListener {
             @Override
             public void onSuccess(int statusCode, Header[] headers, byte[] responseBody) {
                 String response = new String(responseBody);
+
+                // Agrega el Log para ver la respuesta completa del servidor
+                //Log.d("EliminarAlumno", "Respuesta del servidor: " + response);
+
                 Toast.makeText(getActivity(), "Respuesta: " + response, Toast.LENGTH_LONG).show();
 
                 // Actualiza el mismo fragment
@@ -259,6 +264,7 @@ public class AlumnoFragment extends Fragment implements View.OnClickListener {
                 Toast.makeText(getActivity(), "Error: " + errorMessage, Toast.LENGTH_LONG).show();
             }
         });
+
     }
 
     // Método para navegar a la pantalla de registrar alumno
